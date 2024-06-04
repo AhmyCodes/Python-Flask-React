@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from config import app, db
 from model import User
+import re
 from flask_migrate import Migrate
 from sqlalchemy import select
 import hashlib
@@ -20,7 +21,13 @@ def signup():
     name = request.json.get('name')
     email = request.json.get('email')    
     password = request.json.get('password')
-    password_confirmation = request.json.get('password')
+    password_confirmation = request.json.get('password_confirmation')
+
+
+    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
+
+    if not re.match(regex, email):
+        return jsonify({'error': 'invalid email'}), 400
 
     if password != password_confirmation:
         return jsonify({'error': 'Passwords do not match'}), 400
